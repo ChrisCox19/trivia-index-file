@@ -67,48 +67,23 @@
         border-radius: 18px; 
         margin-bottom: 18px;
     }
-
-    /* Revealed Answer - Centered in middle */
-    .revealed-wrapper {
-        width: 760px;
-        margin: 0 auto;
-    }
+    .revealed-wrapper { width: 780px; margin: 0 auto; }
     .answer-card.revealed {
-        width: 760px !important;
+        width: 780px !important;
         padding: 35px;
         background: #34D399;
         color: #0F172A;
         border-color: #34D399;
-        animation: pop 1.2s ease forwards;
     }
-    .answer-card.revealed .answer-image { height: 280px; border: 8px solid white; }
-    .answer-card.revealed .answer-text { font-size: 3.1rem; margin: 15px 0; }
-    .answer-card.revealed .explanation-inside {
-        font-size: 1.8rem;
-        line-height: 1.4;
-        margin-top: 15px;
-    }
-
-    .timer-container {
-        margin: 30px auto 0;
-        flex-shrink: 0;
-    }
-    .footer {
-        margin-top: auto;
-        text-align: center;
-        font-size: 1.8rem;
-        opacity: 0.9;
-        letter-spacing: 3px;
-    }
+    .answer-card.revealed .answer-image { height: 260px; border: 8px solid white; }
+    .timer { font-size: 6rem; font-weight: 700; color: #00F5FF; margin: 30px 0; }
+    .footer { margin-top: auto; text-align: center; font-size: 1.8rem; opacity: 0.9; letter-spacing: 4px; }
 </style>
 </head>
 <body>
-<div class="container" id="container">
-    <!-- Content loaded by JavaScript -->
-</div>
+<div class="container" id="container"></div>
 
 <script>
-// ==================== TRIVIA QUESTIONS ====================
 const triviaQuestions = [
     {
         question: "Which animal is the largest in the world?",
@@ -119,69 +94,27 @@ const triviaQuestions = [
         ],
         explanation: "The Blue Whale is the largest animal ever — up to 100 feet long and 200 tons!"
     }
-    // Add more questions here later
 ];
 
-let currentIndex = Math.floor(Math.random() * triviaQuestions.length);
+let currentIndex = 0;
 
 function loadTrivia() {
     const q = triviaQuestions[currentIndex];
-    const correctIndex = q.answers.findIndex(a => a.correct);
+    let html = `<h1>${q.question}</h1><div class="middle-area"><div class="answers">`;
 
-    let html = `<h1>${q.question}</h1>
-        <div class="middle-area" id="middle">
-            <div class="answers">`;
-
-    q.answers.forEach((ans, i) => {
+    q.answers.forEach(ans => {
         html += `
-            <div class="answer-card" id="card${i}">
+            <div class="answer-card">
                 <img src="${ans.image}" class="answer-image">
-                <div class="answer-text">${ans.text}</div>
+                <div>${ans.text}</div>
             </div>`;
     });
 
     html += `</div></div>
-        <div class="timer-container">
-            <div style="font-size:6rem; font-weight:700; color:#00F5FF;" id="timer">20</div>
-        </div>
+        <div class="timer">20</div>
         <div class="footer">Buzz Screens Trivia</div>`;
 
     document.getElementById('container').innerHTML = html;
-    startTimer(correctIndex);
-}
-
-function startTimer(correctIndex) {
-    let timeLeft = 20;
-    const timerEl = document.getElementById('timer');
-
-    const interval = setInterval(() => {
-        timeLeft--;
-        timerEl.textContent = timeLeft;
-
-        if (timeLeft <= 0) {
-            clearInterval(interval);
-            showCorrectAnswer(correctIndex);
-        }
-    }, 1000);
-}
-
-function showCorrectAnswer(correctIndex) {
-    const middle = document.getElementById('middle');
-    const q = triviaQuestions[currentIndex];
-
-    middle.innerHTML = `
-        <div class="revealed-wrapper">
-            <div class="answer-card revealed">
-                <img src="${q.answers[correctIndex].image}" class="answer-image">
-                <div class="answer-text">${q.answers[correctIndex].text}</div>
-                <div class="explanation-inside">${q.explanation}</div>
-            </div>
-        </div>`;
-    
-    setTimeout(() => {
-        currentIndex = (currentIndex + 1) % triviaQuestions.length;
-        loadTrivia();
-    }, 10000);
 }
 
 loadTrivia();

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Buzz Screens Trivia</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap');
+    
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #0F172A, #1E2937);
+        color: white;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    .container { 
+        width: 100%; 
+        max-width: 1920px; 
+        margin: 0 auto; 
+        padding: 40px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    h1 { 
+        font-size: 3.1rem; 
+        margin-bottom: 50px; 
+        text-shadow: 0 8px 30px rgba(0,245,255,0.7);
+        flex-shrink: 0;
+        line-height: 1.15;
+    }
+    
+    .middle-area {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 30px;
+    }
+    .answers {
+        display: flex; 
+        justify-content: center; 
+        gap: 70px;
+    }
+    .answer-card {
+        background: #1E2937; 
+        width: 420px; 
+        padding: 25px; 
+        border-radius: 28px;
+        font-size: 2.1rem; 
+        font-weight: 700; 
+        border: 7px solid #00F5FF;
+        box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+        display: flex; 
+        flex-direction: column; 
+        align-items: center;
+        position: relative;
+    }
+    .answer-image {
+        width: 100%; 
+        height: 170px; 
+        object-fit: cover; 
+        border-radius: 18px; 
+        margin-bottom: 18px;
+    }
+
+    /* Revealed Answer - Centered in middle */
+    .revealed-wrapper {
+        width: 760px;
+        margin: 0 auto;
+    }
+    .answer-card.revealed {
+        width: 760px !important;
+        padding: 35px;
+        background: #34D399;
+        color: #0F172A;
+        border-color: #34D399;
+        animation: pop 1.2s ease forwards;
+    }
+    .answer-card.revealed .answer-image { height: 280px; border: 8px solid white; }
+    .answer-card.revealed .answer-text { font-size: 3.1rem; margin: 15px 0; }
+    .answer-card.revealed .explanation-inside {
+        font-size: 1.8rem;
+        line-height: 1.4;
+        margin-top: 15px;
+    }
+
+    .timer-container {
+        margin: 30px auto 0;
+        flex-shrink: 0;
+    }
+    .footer {
+        margin-top: auto;
+        text-align: center;
+        font-size: 1.8rem;
+        opacity: 0.9;
+        letter-spacing: 3px;
+    }
+</style>
+</head>
+<body>
+<div class="container" id="container">
+    <!-- Content loaded by JavaScript -->
+</div>
+
+<script>
+// ==================== TRIVIA QUESTIONS ====================
+const triviaQuestions = [
+    {
+        question: "Which animal is the largest in the world?",
+        answers: [
+            { text: "A) African Elephant", image: "https://images.pexels.com/photos/1770606/pexels-photo-1770606.jpeg", correct: false },
+            { text: "B) Blue Whale", image: "https://images.pexels.com/photos/31959085/pexels-photo-31959085.jpeg", correct: true },
+            { text: "C) Giraffe", image: "https://images.pexels.com/photos/802112/pexels-photo-802112.jpeg", correct: false }
+        ],
+        explanation: "The Blue Whale is the largest animal ever — up to 100 feet long and 200 tons!"
+    }
+    // Add more questions here later
+];
+
+let currentIndex = Math.floor(Math.random() * triviaQuestions.length);
+
+function loadTrivia() {
+    const q = triviaQuestions[currentIndex];
+    const correctIndex = q.answers.findIndex(a => a.correct);
+
+    let html = `<h1>${q.question}</h1>
+        <div class="middle-area" id="middle">
+            <div class="answers">`;
+
+    q.answers.forEach((ans, i) => {
+        html += `
+            <div class="answer-card" id="card${i}">
+                <img src="${ans.image}" class="answer-image">
+                <div class="answer-text">${ans.text}</div>
+            </div>`;
+    });
+
+    html += `</div></div>
+        <div class="timer-container">
+            <div style="font-size:6rem; font-weight:700; color:#00F5FF;" id="timer">20</div>
+        </div>
+        <div class="footer">Buzz Screens Trivia</div>`;
+
+    document.getElementById('container').innerHTML = html;
+    startTimer(correctIndex);
+}
+
+function startTimer(correctIndex) {
+    let timeLeft = 20;
+    const timerEl = document.getElementById('timer');
+
+    const interval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(interval);
+            showCorrectAnswer(correctIndex);
+        }
+    }, 1000);
+}
+
+function showCorrectAnswer(correctIndex) {
+    const middle = document.getElementById('middle');
+    const q = triviaQuestions[currentIndex];
+
+    middle.innerHTML = `
+        <div class="revealed-wrapper">
+            <div class="answer-card revealed">
+                <img src="${q.answers[correctIndex].image}" class="answer-image">
+                <div class="answer-text">${q.answers[correctIndex].text}</div>
+                <div class="explanation-inside">${q.explanation}</div>
+            </div>
+        </div>`;
+    
+    setTimeout(() => {
+        currentIndex = (currentIndex + 1) % triviaQuestions.length;
+        loadTrivia();
+    }, 10000);
+}
+
+loadTrivia();
+</script>
+</body>
+</html>
